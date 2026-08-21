@@ -1,6 +1,6 @@
 # ROQUE
 
-**Tu media buyer senior dentro de Claude.**
+**Tu media buyer senior de Meta Ads dentro de Claude Code.**
 
 ROQUE no es una herramienta ni un generador de anuncios. Es el criterio de un comprador de tráfico con años de cuenta a sus espaldas, escrito en archivos que tu Claude lee antes de contestarte. Le pones tus números y a partir de ahí te dice qué mirar, en qué orden y cuándo decidir — incluida la respuesta que menos gusta, que es "no toques nada y espera a que cierre la ventana".
 
@@ -22,13 +22,50 @@ Dentro hay:
 
 ## Instalación
 
-1. Descarga o clona este repo.
-2. Copia la carpeta `roque/` dentro de tu carpeta de skills de Claude Code:
-   - macOS / Linux: `~/.claude/skills/`
-   - Windows: `C:\Users\TU_USUARIO\.claude\skills\`
-3. Copia `contexto.md` a la carpeta del proyecto desde el que trabajes.
-4. **Rellena `contexto.md`.** Sobre todo el breakeven CPA. Sin ese número ROQUE no puede diagnosticar nada y te lo va a decir.
-5. Abre Claude Code y pregúntale algo real: *"tengo un ad set en 340 € gastados, 12 compras, CTR 2,1 %. ¿Escalo?"*
+### Windows (PowerShell)
+
+Copia y pega estas cuatro líneas, una a una:
+
+    cd $env:TEMP
+    Invoke-WebRequest "https://github.com/soychinaski/roque/archive/refs/heads/main.zip" -OutFile roque.zip
+    Expand-Archive roque.zip -DestinationPath . -Force
+    Copy-Item ".\roque-main\roque" -Destination "$env:USERPROFILE\.claude\skills\" -Recurse -Force
+
+Si te dice que no existe la carpeta de destino, créala antes:
+
+    mkdir "$env:USERPROFILE\.claude\skills" -Force
+
+Y comprueba que quedó bien:
+
+    Get-ChildItem "$env:USERPROFILE\.claude\skills\roque" -Recurse | Select-Object FullName
+
+### macOS y Linux (Terminal)
+
+    cd /tmp
+    curl -L https://github.com/soychinaski/roque/archive/refs/heads/main.zip -o roque.zip
+    unzip -o roque.zip
+    mkdir -p ~/.claude/skills
+    cp -r roque-main/roque ~/.claude/skills/
+
+Y comprueba:
+
+    ls -R ~/.claude/skills/roque
+
+En ambos casos te tienen que quedar cuatro cosas: `SKILL.md`, la carpeta `references/` y dentro `diagnostico.md` y `cuenta-e-identidad.md`.
+
+## Primer uso
+
+Abre Claude Code y suéltale una pregunta real, sin nombrar la skill:
+
+> tengo un ad set con 280 € gastados y 9 compras, ¿escalo o espero?
+
+ROQUE se activa solo, calcula el CPA y te dice que no puede decidir nada sin tu breakeven ni la ventana de fechas. Eso no es un fallo: es el producto funcionando.
+
+**No rellenes `contexto.md` a mano.** Dile:
+
+> móntame el contexto.md, te voy dando los datos
+
+Y te lo construye preguntándote lo que hace falta — empezando por el breakeven CPA, que es el número del que cuelga todo lo demás. Guárdalo en la carpeta del proyecto desde el que trabajes y mantenlo vivo: cuando cambie un precio, un coste o un geo, cámbialo ahí.
 
 ## Lo que no es
 
